@@ -1,0 +1,398 @@
+:root {
+  /* Gold-on-black brand palette, taken from the Manero mark.
+     Change these to rebrand the whole storefront. */
+  --espresso: #0d0b09; /* near-black: header, footer, logo backdrop */
+  --roast: #1c1713;
+  --gold: #d4af37;
+  --gold-light: #f0d98a;
+  --gold-dark: #9c7a1e;
+  --crema: #b9a06a;
+  --crema-light: #e8dcc0;
+  --foam: #faf7f2;
+  --paper: #ffffff;
+  --ink: #17120e;
+  --ink-soft: #6b5f52;
+  --line: #e7e0d4;
+  --accent: #b8860b;
+  --accent-dark: #8f6708;
+  --success: #2f6d4f;
+  --danger: #b3341f;
+
+  /* The logo SVG knocks its bean crease out in --espresso. That value is
+     hardcoded inside the file (an <img> can't see these variables), so if you
+     change --espresso, change the stroke in assets/logo/manero-logo.svg too. */
+
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(43, 26, 18, 0.06);
+  --shadow: 0 4px 16px rgba(43, 26, 18, 0.08);
+  --shadow-lg: 0 12px 40px rgba(43, 26, 18, 0.16);
+
+  /* Tall enough for the stacked logo lockup (monogram over wordmark) to stay
+     legible — at a typical 68px bar the wordmark turns to mush. */
+  --header-h: 84px;
+  --max-w: 1240px;
+
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: var(--foam);
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: var(--espresso);
+  line-height: 1.2;
+  margin: 0 0 0.5em;
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* ---------- Layout ---------- */
+
+.container {
+  width: 100%;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page {
+  padding: 32px 0 72px;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  color: var(--ink-soft);
+  margin: 0 0 28px;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 12px 22px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: var(--espresso);
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 100%);
+}
+
+.btn-dark {
+  background: var(--espresso);
+  color: var(--gold-light);
+}
+.btn-dark:hover:not(:disabled) {
+  background: var(--roast);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--espresso);
+}
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--crema);
+  background: var(--paper);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ---------- Forms ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.field input,
+.field select {
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: 2px solid var(--crema);
+  outline-offset: -1px;
+  border-color: var(--crema);
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.field-error {
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+/* ---------- Shared states ---------- */
+
+.notice {
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+}
+
+.notice-error {
+  border-color: #e9c2ba;
+  background: #fdf3f1;
+  color: var(--danger);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.badge-sale {
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: var(--espresso);
+}
+
+.badge-best {
+  background: var(--espresso);
+  color: var(--gold-light);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--line) 25%, #f2ebe4 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Touch targets ----------
+   Interactive furniture gets bumped to a ~44px minimum on narrow screens and on
+   any touch device. Both conditions are needed: `pointer: coarse` alone misses
+   narrow desktop windows, and width alone misses large tablets. Wide
+   mouse-driven screens keep the tighter desktop rhythm. */
+
+@media (max-width: 900px), (pointer: coarse) {
+  .btn,
+  .field input,
+  .field select,
+  .sort select {
+    min-height: 44px;
+  }
+
+  /* The checkbox itself stays small; the whole row is the tap target. */
+  .option {
+    min-height: 44px;
+  }
+
+  .stepper button {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Text links inside components (footer columns, "Remove", breadcrumbs) are
+     enlarged in their own scoped blocks — a global rule here loses on
+     specificity to the component's `[data-v-*]`-qualified selectors. */
+}
+
+/* ---------- Dummy payment dialog ----------
+   Built imperatively in utils/payment.ts (it stands in for a hosted gateway
+   page), so its styles live here rather than in a scoped component block. */
+
+.dummy-pay-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(13, 11, 9, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.dummy-pay-card {
+  width: min(400px, 100%);
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 28px 24px 22px;
+  text-align: center;
+}
+
+.dummy-pay-tag {
+  display: inline-block;
+  margin: 0 0 16px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #fdf4e0;
+  color: #8a6a12;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dummy-pay-brand {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+  letter-spacing: 0.16em;
+}
+
+.dummy-pay-amount {
+  margin: 0 0 4px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--espresso);
+}
+
+.dummy-pay-order {
+  margin: 0 0 24px;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.dummy-pay-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.dummy-pay-btn {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.dummy-pay-btn.primary {
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: var(--espresso);
+}
+
+.dummy-pay-btn.ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink-soft);
+}
+
+.dummy-pay-btn.ghost:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.dummy-pay-btn.link {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  padding: 6px;
+}
+
+.dummy-pay-note {
+  margin: 18px 0 0;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.dummy-pay-note code {
+  background: var(--foam);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.95em;
+}

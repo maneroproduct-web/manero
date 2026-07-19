@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: manero-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: manero
+      POSTGRES_PASSWORD: manero
+      POSTGRES_DB: manero
+    ports:
+      - "5432:5432"
+    volumes:
+      - manero_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U manero -d manero"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  manero_pgdata:
