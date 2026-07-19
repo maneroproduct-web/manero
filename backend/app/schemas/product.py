@@ -48,6 +48,9 @@ class ProductOut(BaseModel):
     origin: str
     tasting_notes: str
     image_url: str
+    # Exposed so the admin list can distinguish hidden products. The storefront
+    # endpoints only ever return active ones, so this is always true there.
+    is_active: bool
     is_bestseller: bool
     variants: list[VariantOut]
 

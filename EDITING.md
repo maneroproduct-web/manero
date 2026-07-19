@@ -8,6 +8,39 @@ automatically — you don't need to restart anything.
 
 ---
 
+## 0. The admin panel — the easiest way to change products
+
+There is now a staff area at **<http://localhost:5173/admin>** where you can add,
+edit, hide and delete products without touching any code. Prices are entered in
+rupees; the conversion to paise happens for you.
+
+**Create your account first** (one time, on the machine running the backend):
+
+```bash
+cd backend
+.venv/Scripts/python -m app.cli create-admin      # Windows
+.venv/bin/python -m app.cli create-admin          # Linux/macOS
+```
+
+It asks for an email and password at a prompt. The password is never passed as
+a command argument, because arguments end up in your shell history.
+
+Other commands: `list-admins`, `reset-password`, `deactivate-admin`.
+
+### Hide vs Delete
+
+- **Hide** — the product disappears from the shop but stays in the database, and
+  past orders that reference it remain intact. Reversible with **Restore**.
+- **Delete** — permanent. Refused outright for any product that appears in a past
+  order, because removing it would rewrite what those orders say was bought.
+
+Use Hide for anything you have ever sold. Delete is for mistakes.
+
+> The sections below still apply — the seed file is useful for bulk changes, and
+> everything else on the site is edited in code.
+
+---
+
 ## 1. The logo
 
 **File:** `frontend/src/assets/logo/manero-logo.jpg`
@@ -111,7 +144,64 @@ safe — it won't create duplicates. Refresh the browser to see the changes.
 
 ---
 
-## 3. Homepage text
+## 3. Our Story and Contact page content
+
+Every word on these two pages lives in plain data files — no Vue markup to touch.
+
+| Page | File |
+| --- | --- |
+| Our Story (`/story`) | `frontend/src/content/story.ts` |
+| Contact (`/contact`) | `frontend/src/content/contact.ts` |
+
+Open either, change the strings, save. The page reloads instantly.
+
+### `story.ts`
+
+- `hero` — the headline and opening paragraph. The `\n` in the title is where the
+  headline breaks onto a second line; move it or remove it.
+- `origin` — the founder narrative: `paragraphs` is a list, so add or remove
+  entries freely. `pullQuote` is the large italic line. `image` takes any URL.
+- `values` — the three "how we do it differently" cards. Icons are plain emoji.
+- `process` — the four farm-to-cup steps.
+- `stats` — the four numbers on the dark strip.
+- `commitments` — the social-responsibility section.
+- `closing` — the final call to action.
+
+**The copy currently in there is placeholder** — written to fit the layout, not
+true. Replace it with the real Manero story. Keep each piece roughly the same
+length and the design will hold.
+
+### `contact.ts`
+
+- `channels` — email, WhatsApp, phone, address. Set `href` to make a card
+  clickable (`mailto:`, `tel:`, `https://wa.me/…`) or `null` for display only.
+- `subjects` — the options in the "What is this about?" dropdown.
+- `faqs` — the accordion. Add or remove entries; the first is open by default.
+
+> **Replace the placeholder contact details before going live.** The email,
+> phone number and address in there are invented. A contact page with a
+> fictional address is worse than no contact page.
+
+### Where the messages go
+
+The contact form is real — submissions are stored in the database, not emailed
+(there is no mail provider wired up yet). Read them with:
+
+```bash
+./db.sh "SELECT created_at, name, email, subject, message FROM contact_messages WHERE NOT handled ORDER BY id DESC"
+```
+
+Mark one as dealt with so it drops out of that list:
+
+```bash
+./db.sh "UPDATE contact_messages SET handled = true WHERE id = 1"
+```
+
+**Check this regularly** — nothing notifies you when a message arrives.
+
+---
+
+## 4. Homepage text
 
 **File:** `frontend/src/views/HomeView.vue`
 
@@ -125,7 +215,7 @@ below — search for `Coffee worth` and edit the text directly.
 
 ---
 
-## 4. Header and footer links
+## 5. Header and footer links
 
 - **Header menu:** `frontend/src/components/AppHeader.vue` → the `links` list
 - **Footer columns:** `frontend/src/components/AppFooter.vue` → the `columns` list
@@ -136,7 +226,7 @@ so `?bean_type=arabica` or `?roast_level=dark` work as menu items.
 
 ---
 
-## 5. Brand name and tagline
+## 6. Brand name and tagline
 
 **File:** `frontend/src/assets/logo/index.ts`
 
@@ -151,7 +241,7 @@ The browser tab title and search-engine description are in `frontend/index.html`
 
 ---
 
-## 6. Colours
+## 7. Colours
 
 **File:** `frontend/src/style.css` — the `:root` block at the very top.
 
@@ -172,7 +262,7 @@ need to re-edit the image to match.
 
 ---
 
-## 7. Shipping cost and free-shipping threshold
+## 8. Shipping cost and free-shipping threshold
 
 **File:** `backend/.env`
 
@@ -188,7 +278,7 @@ The "Free shipping over ₹599" text on the homepage is separate marketing copy 
 
 ---
 
-## 8. Payment gateway
+## 9. Payment gateway
 
 **File:** `backend/.env`
 
@@ -207,6 +297,9 @@ of `README.md` for switching to real Razorpay.
 | --- | --- |
 | Logo | `frontend/src/assets/logo/manero-logo.jpg` |
 | Product names, prices, photos | `backend/app/seeds/seed_products.py` (then re-run the seed) |
+| Our Story page copy | `frontend/src/content/story.ts` |
+| Contact details, FAQs | `frontend/src/content/contact.ts` |
+| Reading contact form messages | `./db.sh "SELECT * FROM contact_messages WHERE NOT handled"` |
 | Homepage sections and copy | `frontend/src/views/HomeView.vue` |
 | Menu / footer links | `AppHeader.vue` / `AppFooter.vue` |
 | Brand name, tagline | `frontend/src/assets/logo/index.ts` |

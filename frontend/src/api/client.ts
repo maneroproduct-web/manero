@@ -1,11 +1,17 @@
 import type {
+  Admin,
   Cart,
+  ContactMessagePayload,
+  ContactMessageResult,
   CreateOrderPayload,
   CreateOrderResult,
+  DeleteResult,
   Facets,
+  LoginResult,
   Order,
   PaymentCallback,
   Product,
+  ProductInput,
   ProductList,
   ProductQuery,
 } from './types'
@@ -22,13 +28,27 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * The admin session token, held in module scope so every request picks it up
+ * without each call site remembering to pass it. The auth store owns the value
+ * and is the only thing that should set it.
+ */
+let authToken: string | null = null
+
+export function setAuthToken(token: string | null): void {
+  authToken = token
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...((init?.headers as Record<string, string>) ?? {}),
+  }
+  if (authToken) headers.Authorization = `Bearer ${authToken}`
+
   let res: Response
   try {
-    res = await fetch(`${BASE}/api/v1${path}`, {
-      headers: { 'Content-Type': 'application/json' },
-      ...init,
-    })
+    res = await fetch(`${BASE}/api/v1${path}`, { ...init, headers })
   } catch {
     // Network-level failure — the API is unreachable, not a 4xx/5xx.
     throw new ApiError('Could not reach the server. Check your connection.', 0)
@@ -117,4 +137,29 @@ export const api = {
     request<Order>('/checkout/verify', { method: 'POST', ...json(payload) }),
 
   getOrder: (orderNumber: string) => request<Order>(`/checkout/orders/${orderNumber}`),
+
+  sendContactMessage: (payload: ContactMessagePayload) =>
+    request<ContactMessageResult>('/contact', { method: 'POST', ...json(payload) }),
+
+  // --- admin ---
+
+  login: (email: string, password: string) =>
+    request<LoginResult>('/auth/login', { method: 'POST', ...json({ email, password }) }),
+
+  me: () => request<Admin>('/auth/me'),
+
+  /** Every product, including inactive ones the storefront hides. */
+  adminListProducts: () => request<Product[]>('/admin/products'),
+
+  adminCreateProduct: (payload: ProductInput) =>
+    request<Product>('/admin/products', { method: 'POST', ...json(payload) }),
+
+  adminUpdateProduct: (id: number, payload: Partial<ProductInput>) =>
+    request<Product>(`/admin/products/${id}`, { method: 'PATCH', ...json(payload) }),
+
+  /** Deactivates by default; `force` permanently deletes an unsold product. */
+  adminDeleteProduct: (id: number, force = false) =>
+    request<DeleteResult>(`/admin/products/${id}${force ? '?force=true' : ''}`, {
+      method: 'DELETE',
+    }),
 }

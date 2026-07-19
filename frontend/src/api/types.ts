@@ -34,6 +34,8 @@ export interface Product {
   origin: string
   tasting_notes: string
   image_url: string
+  /** Hidden products stay in the database but vanish from the shop. */
+  is_active: boolean
   is_bestseller: boolean
   variants: Variant[]
 }
@@ -135,6 +137,63 @@ export interface Order {
   shipping_state: string
   shipping_pincode: string
   items: OrderItem[]
+}
+
+export interface Admin {
+  id: number
+  email: string
+  name: string
+}
+
+export interface LoginResult {
+  access_token: string
+  token_type: string
+  expires_in_minutes: number
+  admin: Admin
+}
+
+/** A variant as sent to the admin API. `id` present = update, absent = create. */
+export interface VariantInput {
+  id?: number
+  size_grams: number
+  sku: string
+  price_paise: number
+  compare_at_price_paise: number | null
+  stock_qty: number
+}
+
+export interface ProductInput {
+  slug: string
+  name: string
+  description: string
+  bean_type: BeanType
+  roast_level: RoastLevel
+  grind: Grind
+  flavour: Flavour
+  origin: string
+  tasting_notes: string
+  image_url: string
+  is_active: boolean
+  is_bestseller: boolean
+  variants: VariantInput[]
+}
+
+export interface DeleteResult {
+  status: 'deleted' | 'deactivated'
+  detail: string
+}
+
+export interface ContactMessagePayload {
+  name: string
+  email: string
+  phone: string
+  subject: string
+  message: string
+}
+
+export interface ContactMessageResult {
+  ok: boolean
+  reference: string
 }
 
 export interface ProductQuery {

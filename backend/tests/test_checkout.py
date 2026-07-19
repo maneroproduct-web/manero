@@ -195,7 +195,7 @@ async def test_stock_never_goes_negative(client, catalog, session_factory):
     # Someone else empties the shelf between order creation and the callback.
     async with session_factory() as session:
         variant = await session.scalar(
-            select(ProductVariant).where(ProductVariant.sku == "dark-arabica-250")
+            select(ProductVariant).where(ProductVariant.sku == "DARK-ARABICA-250")
         )
         variant.stock_qty = 1          # less than the 2 that were bought
         await session.commit()
@@ -206,7 +206,7 @@ async def test_stock_never_goes_negative(client, catalog, session_factory):
 
     async with session_factory() as session:
         variant = await session.scalar(
-            select(ProductVariant).where(ProductVariant.sku == "dark-arabica-250")
+            select(ProductVariant).where(ProductVariant.sku == "DARK-ARABICA-250")
         )
         # Left alone rather than driven to -1.
         assert variant.stock_qty == 1

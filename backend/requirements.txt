@@ -9,6 +9,10 @@ pydantic-settings==2.7.0
 python-dotenv==1.0.1
 razorpay==1.4.2
 email-validator==2.2.0
+# Auth: argon2 for password hashing (memory-hard, resists GPU cracking in a way
+# bcrypt no longer does well), pyjwt for signed session tokens.
+argon2-cffi==23.1.0
+pyjwt==2.10.1
 
 # dev / test
 pytest==8.3.4

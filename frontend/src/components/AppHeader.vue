@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { BRAND_NAME, logoUrl } from '@/assets/logo'
+import { BRAND_NAME, markUrl } from '@/assets/logo'
 import { useCartStore } from '@/stores/cart'
 
 const cart = useCartStore()
@@ -13,7 +13,8 @@ const links = [
   { to: '/shop', label: 'Shop All' },
   { to: '/shop?grind=filter', label: 'Filter Coffee' },
   { to: '/shop?grind=instant', label: 'Instant' },
-  { to: '/shop?bean_type=arabica', label: 'Arabica' },
+  { to: '/story', label: 'Our Story' },
+  { to: '/contact', label: 'Contact' },
 ]
 
 watch(() => route.fullPath, () => (mobileOpen.value = false))
@@ -31,8 +32,11 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
         <span aria-hidden="true">{{ mobileOpen ? '✕' : '☰' }}</span>
       </button>
 
+      <!-- Monogram as image, wordmark as live text: a stacked lockup shrunk to
+           header height leaves "MANERO" an illegible smudge. -->
       <RouterLink to="/" class="brand" :aria-label="`${BRAND_NAME} home`">
-        <img :src="logoUrl" :alt="BRAND_NAME" class="logo" />
+        <img :src="markUrl" alt="" aria-hidden="true" class="mark" />
+        <span class="wordmark">{{ BRAND_NAME }}</span>
       </RouterLink>
 
       <nav class="nav" aria-label="Primary">
@@ -81,12 +85,29 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
 .brand {
   display: flex;
   align-items: center;
+  gap: 12px;
   min-height: 44px;
 }
 
-.logo {
-  height: 62px;
+.mark {
+  height: 46px;
   width: auto;
+  flex-shrink: 0;
+}
+
+.wordmark {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.45rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  /* Gold gradient on the type, matching the monogram it sits beside. */
+  background: linear-gradient(180deg, #f6e27a 0%, #d4af37 45%, #b8860b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Letter-spacing adds a trailing gap; pull it back so the pair looks centred. */
+  margin-right: -0.24em;
+  white-space: nowrap;
 }
 
 .nav {
@@ -181,9 +202,15 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
   }
   .brand {
     margin: 0 auto;
+    gap: 9px;
   }
-  .logo {
-    height: 50px;
+  .mark {
+    height: 36px;
+  }
+  .wordmark {
+    font-size: 1.12rem;
+    letter-spacing: 0.18em;
+    margin-right: -0.18em;
   }
 }
 </style>

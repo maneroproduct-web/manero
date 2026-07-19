@@ -72,7 +72,10 @@ async def catalog(session_factory):
             for grams, price, stock in variants:
                 session.add(
                     ProductVariant(
-                        product_id=product.id, sku=f"{slug}-{grams}",
+                        product_id=product.id,
+                        # Uppercase, matching both the seed script and the
+                        # admin API's SKU normalisation.
+                        sku=f"{slug}-{grams}".upper(),
                         size_grams=grams, price_paise=price,
                         compare_at_price_paise=None, stock_qty=stock,
                     )

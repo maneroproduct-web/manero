@@ -28,9 +28,7 @@
   --shadow: 0 4px 16px rgba(43, 26, 18, 0.08);
   --shadow-lg: 0 12px 40px rgba(43, 26, 18, 0.16);
 
-  /* Tall enough for the stacked logo lockup (monogram over wordmark) to stay
-     legible — at a typical 68px bar the wordmark turns to mush. */
-  --header-h: 84px;
+  --header-h: 72px;
   --max-w: 1240px;
 
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
