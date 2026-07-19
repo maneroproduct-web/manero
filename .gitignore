@@ -21,6 +21,10 @@ dist/
 # Project-local PostgreSQL instance (see README: "Database")
 .pgdata/
 
+# Runtime artefacts from start.sh on Linux/macOS
+logs/
+.run/
+
 # Editors / OS
 .vscode/
 .idea/

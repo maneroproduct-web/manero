@@ -192,6 +192,91 @@ for both providers.
 
 ---
 
+## Looking at the database
+
+The project's database is `manero`, on port **5433** (not the default 5432 — see the
+Database section above for why).
+
+| Setting | Value |
+| --- | --- |
+| Host | `localhost` |
+| Port | **5433** |
+| Database | `manero` |
+| Username | `manero` |
+| Password | `manero` |
+
+### Quick queries from the terminal
+
+```bash
+./db.sh                                        # interactive session
+./db.sh "SELECT * FROM orders LIMIT 5"         # run one query
+```
+```powershell
+.\db.ps1                                       # PowerShell equivalent
+.\db.ps1 "SELECT * FROM orders LIMIT 5"
+```
+
+Useful commands once inside: `\dt` lists tables, `\d orders` describes a table,
+`\q` quits.
+
+### pgAdmin (graphical)
+
+pgAdmin 4 was installed alongside PostgreSQL. Launch it from the Start menu, or:
+
+```
+"C:\Program Files\PostgreSQL\17\pgAdmin 4\runtime\pgAdmin4.exe"
+```
+
+Then **right-click "Servers" → Register → Server** and fill in:
+
+- **General → Name:** `Manero` (any label you like)
+- **Connection → Host:** `localhost`
+- **Connection → Port:** `5433` ← the default is 5432; this must be changed
+- **Connection → Maintenance database:** `manero`
+- **Connection → Username:** `manero`
+- **Connection → Password:** `manero` (tick "Save password")
+
+Your tables are then under
+*Servers → Manero → Databases → manero → Schemas → public → Tables*. Right-click any
+table → *View/Edit Data* to browse rows.
+
+> Getting "connection refused"? The database isn't running — `./start.sh` first.
+> Getting "database does not exist"? You're probably pointed at port 5432, the other
+> PostgreSQL server on this machine, which doesn't have this project's data.
+
+### Questions worth asking it
+
+> **Enum columns are stored in UPPERCASE.** The API says `"status": "paid"` and
+> `"bean_type": "arabica"`, but the database holds `PAID` and `ARABICA` — SQLAlchemy
+> stores an enum's *name*, not its *value*. So `WHERE status = 'paid'` silently
+> returns zero rows; you need `WHERE status = 'PAID'`. Same for `bean_type`,
+> `roast_level`, `grind` and `flavour`.
+
+```sql
+-- Paid orders, newest first — what needs shipping
+SELECT order_number, created_at, shipping_name, shipping_city, total_paise
+FROM orders WHERE status = 'PAID' ORDER BY id DESC;
+
+-- What was in a specific order
+SELECT product_name, size_grams, quantity, line_total_paise
+FROM order_items WHERE order_id = (
+  SELECT id FROM orders WHERE order_number = 'MNR2607196806'
+);
+
+-- Stock levels, lowest first
+SELECT p.name, v.size_grams, v.stock_qty
+FROM product_variants v JOIN products p ON p.id = v.product_id
+ORDER BY v.stock_qty ASC LIMIT 10;
+
+-- Best sellers by units sold
+SELECT product_name, SUM(quantity) AS units
+FROM order_items GROUP BY product_name ORDER BY units DESC;
+```
+
+Remember prices are **integer paise** — divide by 100 for rupees.
+
+---
+
 ## Tests
 
 ```bash

@@ -4,28 +4,56 @@ Three things need to be running: **database → backend → frontend**, in that 
 
 ## Quick way
 
-**In Git Bash:**
+```bash
+./start.sh        # Git Bash, Linux, macOS
+./stop.sh
+```
+```powershell
+.\start.ps1       # PowerShell
+.\stop.ps1
+```
+
+`start.sh` works on all three platforms and adapts to each:
+
+| | What it does |
+| --- | --- |
+| **Windows** (Git Bash) | Hands off to `start.ps1`, which opens a window per service. Stop with Ctrl+C in those windows, then `./stop.sh` for the database. |
+| **Linux / macOS** | Runs the services in the background, logging to `logs/` and recording PIDs. `./stop.sh` shuts everything down. |
+
+> **Why is there a `.ps1` as well?** `.ps1` scripts only run in PowerShell. Running
+> `./start.ps1` directly in Git Bash gives `line 10: =: command not found` and
+> `syntax error near unexpected token '{'` — bash is trying to read PowerShell as a
+> shell script. Use `./start.sh` in Bash and `.\start.ps1` in PowerShell.
+
+### First run on Linux or macOS
+
+`start.sh` bootstraps whatever is missing: it creates the PostgreSQL cluster in
+`.pgdata/`, creates the `manero` user and database, and runs migrations. You need
+PostgreSQL's tools on your PATH first:
 
 ```bash
-./start.sh
+# Debian / Ubuntu
+sudo apt install postgresql
+export PATH="/usr/lib/postgresql/17/bin:$PATH"   # not on PATH by default
+
+# macOS
+brew install postgresql@17
 ```
 
-**In PowerShell:**
+And the project's own dependencies, once:
 
-```powershell
-.\start.ps1
+```bash
+cd backend  && python3 -m venv .venv && .venv/bin/python -m pip install -r requirements.txt
+cd ../frontend && npm install
 ```
 
-Either one starts all three pieces, waits for each to be ready, and opens the shop.
-To stop: Ctrl+C in the two windows that open, then `./stop.sh` (or `.\stop.ps1`).
+It does **not** seed the catalog — run that yourself if you want the sample products:
 
-> **Why two files?** `.ps1` scripts only run in PowerShell. Running `./start.ps1`
-> directly in Git Bash gives errors like `line 10: =: command not found` and
-> `syntax error near unexpected token '{'` — bash is trying to read PowerShell as
-> shell script. `start.sh` is a small wrapper that hands the script to PowerShell
-> for you, so either terminal works.
+```bash
+cd backend && .venv/bin/python -m app.seeds.seed_products
+```
 
-The manual steps below are what those scripts do, in case you want to run them
+The manual steps below are what these scripts do, in case you want to run them
 yourself or something goes wrong.
 
 ---
